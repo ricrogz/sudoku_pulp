@@ -17,15 +17,13 @@ def num_cell_constraints(i, j):
     return 1 - (i in inset and j in mid) - (i in mid and j in inset)
 
 
-def add_clues(model, flags, fname):
-    with open(fname, 'r') as f:
-        for i, line in enumerate(f):
-            for j, cell in enumerate(line):
-                try:
-                    v = int(cell)
-                    model += flags[i][j][v] == 1, f'Cell_{i:02d}_{j:02d}_{v}'
-                except ValueError:
-                    pass
+def add_clues(model, flags, clues):
+    for i, line in enumerate(clues):
+        for j, cell in enumerate(line):
+            if cell in ('.', ' '):
+                continue
+            v = int(cell)
+            model += flags[i][j][v] == 1, f'Cell_{i:02d}_{j:02d}_{v}'
 
 
 def print_solution(flags, n_cols_rows, values, count):
@@ -46,10 +44,10 @@ def print_solution(flags, n_cols_rows, values, count):
         print(sol)
 
 
-def solve_samurai(fname, n_cols_rows, values):
+def solve_samurai(clues, n_cols_rows, values):
 
     # Prepare the model and  the flags
-    model, flags = init_model(f'Samurai {fname} Model', n_cols_rows, values, num_cell_constraints)
+    model, flags = init_model(f'Samurai Model', n_cols_rows, values, num_cell_constraints)
 
     # Set Column, Row, and Square constraints
     for v in values:
@@ -74,11 +72,11 @@ def solve_samurai(fname, n_cols_rows, values):
                 mk_square_constraint(model, flags, v, i, j)
 
     # Add the clues
-    add_clues(model, flags, fname)
+    add_clues(model, flags, clues)
 
     # Debugging: Write the lp problem model
     if DEBUG:
-        model.writeLP(f'{fname}.lp')
+        model.writeLP(f'Samurai_Model.lp')
 
     # Find all solutions
     count = 0
@@ -102,11 +100,13 @@ def solve_samurai(fname, n_cols_rows, values):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        this = os.path.basename(sys.argv[0])
-        print(f'Usage: ./{this} filename.samurai')
-        quit()
-
     ncr = 21
     vals = list(range(1, 10))
-    solve_samurai(sys.argv[1], ncr, vals)
+
+    # Get clues
+    if len(sys.argv) < 2:
+        clue_lines = read_input(ncr)
+    else:
+        clue_lines = read_file(sys.argv[1], ncr)
+
+    solve_samurai(clue_lines, ncr, vals)
