@@ -20,22 +20,23 @@ def init_model(name, n_cols_rows, values, n_constraints_func):
     # Allow only 1 value per cell and 0 in empty spaces
     for i in range(n_cols_rows):
         for j in range(n_cols_rows):
-            model += lpSum([flags[i][j][v] for v in values]) == n_constraints_func(i, j), f'Cell_{i:02d}_{j:02d}_v'
+            model += lpSum([flags[i][j][v] for v in values]) == n_constraints_func(i, j),\
+                     'Cell_{:02d}_{:02d}_v'.format(i, j)
 
     return model, flags
 
 
 def mk_column_constraint(model, flags, v, i, j):
-    model += lpSum([flags[ii][j][v] for ii in range(i, i + 9)]) == 1, f'9Col_{i:02d}_{j:02d}_{v}'
+    model += lpSum([flags[ii][j][v] for ii in range(i, i + 9)]) == 1, '9Col_{:02d}_{:02d}_{}'.format(i, j, v)
 
 
 def mk_row_constraint(model, flags, v, i, j):
-    model += lpSum([flags[i][jj][v] for jj in range(j, j + 9)]) == 1, f'9Row_{i:02d}_{j:02d}_{v}'
+    model += lpSum([flags[i][jj][v] for jj in range(j, j + 9)]) == 1, '9Row_{:02d}_{:02d}_{}'.format(i, j, v)
 
 
 def mk_square_constraint(model, flags, v, i, j):
     model += lpSum([flags[ii][jj][v] for ii in range(i, i + 3) for jj in range(j, j + 3)]) == 1,\
-             f'9Sq_{i:02d}_{j:02d}_{v}'
+             '9Sq_{:02d}_{:02d}_{}'.format(i, j, v)
 
 
 def validate_clue_line(txt):
@@ -47,7 +48,7 @@ def validate_clue_line(txt):
 
 def read_file(fname, ncr):
     """ Read the clues from a file """
-    print(f'Reading clues from {fname}...')
+    print('Reading clues from {}...'.format(fname))
     clues = []
     with open(fname, 'r') as f:
         for line in f:
@@ -56,7 +57,7 @@ def read_file(fname, ncr):
             clues.append(clue)
 
     if len(clues) < ncr:
-        print(f'Input error: insufficient lines in input.\nPlease provide {ncr} lines of data.')
+        print('Input error: insufficient lines in input.\nPlease provide {} lines of data.'.format(ncr))
         quit()
     return clues
 
@@ -72,6 +73,6 @@ def read_input(ncr):
             validate_clue_line(clue)
             clues.append(clue)
     except IndexError:
-        print(f'Input error: insufficient lines in input.\nPlease provide {ncr} lines of data.')
+        print('Input error: insufficient lines in input.\nPlease provide {} lines of data.'.format(ncr))
         quit()
     return clues

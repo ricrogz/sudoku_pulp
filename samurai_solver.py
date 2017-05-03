@@ -23,12 +23,12 @@ def add_clues(model, flags, clues):
             if cell in ('.', ' '):
                 continue
             v = int(cell)
-            model += flags[i][j][v] == 1, f'Cell_{i:02d}_{j:02d}_{v}'
+            model += flags[i][j][v] == 1, 'Cell_{:02d}_{:02d}_{}'.format(i, j, v)
 
 
 def print_solution(flags, n_cols_rows, values, count):
     print('')
-    print(f'Solution: #{count}')
+    print('Solution: #{}'.format(count))
     print('')
 
     # Create a solution
@@ -47,7 +47,7 @@ def print_solution(flags, n_cols_rows, values, count):
 def solve_samurai(clues, n_cols_rows, values):
 
     # Prepare the model and  the flags
-    model, flags = init_model(f'Samurai Model', n_cols_rows, values, num_cell_constraints)
+    model, flags = init_model('Samurai Model', n_cols_rows, values, num_cell_constraints)
 
     # Set Column, Row, and Square constraints
     for v in values:
@@ -76,7 +76,7 @@ def solve_samurai(clues, n_cols_rows, values):
 
     # Debugging: Write the lp problem model
     if DEBUG:
-        model.writeLP(f'Samurai_Model.lp')
+        model.writeLP('Samurai_Model.lp')
 
     # Find all solutions
     count = 0
@@ -96,7 +96,7 @@ def solve_samurai(clues, n_cols_rows, values):
         model += lpSum([flags[i][j][v] for i in range(n_cols_rows) for j in range(n_cols_rows)
                        for v in values if value(flags[i][j][v]) == 1]) <= 368
 
-    print(f'\n{count} solution(s) found.')
+    print('\n{} solution(s) found.'.format(count))
 
 
 if __name__ == '__main__':
